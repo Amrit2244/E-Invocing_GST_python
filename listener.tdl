@@ -1,0 +1,19 @@
+;; Listener.tdl - v4.0 - UDF Definitions Only
+;; ==================================================================
+;; This TDL ONLY defines the User Defined Fields for E-Invoicing.
+;; All update logic will be handled by Python via XML Import Data.
+;; ==================================================================
+
+;; --- User Defined Fields (UDFs) ---
+[System: UDF]
+    ;; Field Name          : Data Type : ID   : Notes
+    VCH EInvoice IRN        : String    : 1001 : Stores the generated Invoice Reference Number.
+    VCH EInvoice AckNo      : String    : 1002 : Stores the IRP Acknowledgement Number.
+    VCH EInvoice AckDate    : String    : 1003 : Stores the IRP Acknowledgement Date/Time.
+    VCH EInvoice QRCode     : String    : 1004 : Stores the Signed QR Code string. (Check length compatibility with TP 2.1)
+    VCH EInvoice Status     : String    : 1005 : Tracks the status (e.g., "Pending", "Generated", "Failed").
+    VCH EInvoice Error      : String    : 1006 : Stores detailed error messages.
+
+;; ==================================================================
+;; End of TDL File - NO FUNCTION DEFINITIONS
+;; ==================================================================
