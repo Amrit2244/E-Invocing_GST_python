@@ -74,6 +74,7 @@ def parse_voucher_data(voucher):
     Parse individual voucher data to extract required fields.
     """
     try:
+        # Fetch Ledger Entries
         ledger_entries = voucher.get('ALLLEDGERENTRIES.LIST', [])
         if not isinstance(ledger_entries, list):
             ledger_entries = [ledger_entries]
@@ -83,6 +84,7 @@ def parse_voucher_data(voucher):
         sgst_amount = 0
         igst_amount = 0
         total_amount = 0
+        taxable_amount = 0
 
         # Process ledger entries for tax and total amounts
         for entry in ledger_entries:
@@ -97,10 +99,20 @@ def parse_voucher_data(voucher):
                 elif 'IGST' in ledger_name:
                     igst_amount += amount
                 elif entry.get('ISPARTYLEDGER', 'No') == 'Yes':
-                    total_amount = amount
+                    total_amount = amount  # Total amount is typically stored in the party ledger
 
-        # Calculate taxable amount
-        taxable_amount = total_amount - (cgst_amount + sgst_amount + igst_amount)
+        # Fetch Inventory Entries
+        inventory_entries = voucher.get('ALLINVENTORYENTRIES.LIST', [])
+        if not isinstance(inventory_entries, list):
+            inventory_entries = [inventory_entries]
+
+        for entry in inventory_entries:
+            if isinstance(entry, dict):
+                taxable_amount += abs(float(entry.get('AMOUNT', '0') or 0))
+
+        # If taxable amount is 0, derive it from the total amount and taxes
+        if taxable_amount == 0:
+            taxable_amount = total_amount - (cgst_amount + sgst_amount + igst_amount)
 
         return {
             'voucher_number': voucher.get('VOUCHERNUMBER', ''),
